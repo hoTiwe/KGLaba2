@@ -26,12 +26,15 @@ namespace KGLaba2
         {
             // Получаем объект Graphics
             graphics = e.Graphics;
-            int scale = 50;
+            int scale = 60;
+            int netX = 0, netY = 0;
+
             for (int i = 0; i < pictureHeight * pictureWidth; i++)
             {
                 Console.WriteLine($"x: {outputPixels[i].x}; y: {outputPixels[i].x} color: {outputPixels[i].color};");
-
-                graphics.FillRectangle(new SolidBrush(outputPixels[i].color), outputPixels[i].x * scale, outputPixels[i].y * scale, scale, scale);
+                netX = i % pictureWidth;
+                netY = i / pictureWidth;
+                graphics.FillRectangle(new SolidBrush(outputPixels[i].color), outputPixels[i].x * scale + netX, outputPixels[i].y * scale + netY, scale, scale);
             }
         }
 
