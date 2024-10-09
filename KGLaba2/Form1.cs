@@ -12,6 +12,9 @@ namespace KGLaba2
 
         byte[] palette;
         byte[] pixels;
+
+        int[] pixelValues;
+
         Pixel[] outputPixels;
 
         Graphics graphics;
@@ -19,14 +22,15 @@ namespace KGLaba2
         {
             InitializeComponent();
             ReadPicture();
-            parsePixels();  
+            parsePixels();
+            //zoomFile();
         }
 
         private void PictureBox1_Paint(object sender, PaintEventArgs e)
         {
             // Получаем объект Graphics
             graphics = e.Graphics;
-            int scale = 60;
+            int scale = 20;
             int netX = 0, netY = 0;
 
             for (int i = 0; i < pictureHeight * pictureWidth; i++)
@@ -40,7 +44,7 @@ namespace KGLaba2
 
         public void ReadPicture()
         {
-            string filePath = @"../../../new_picker_1.glhf";
+            string filePath = @"../../../zoomed.glhf";
 
             using (FileStream fileStream = new FileStream(filePath, FileMode.Open))
             {
@@ -82,6 +86,7 @@ namespace KGLaba2
         public void parsePixels()
         {
             outputPixels = new Pixel[pictureWidth * pictureHeight];
+            pixelValues = new int[pictureWidth * pictureHeight];
 
             int countPixelByte = (int)Math.Ceiling((double)pictureWidth * pictureHeight * bitCount / 8);
             int startPosition = 0;
@@ -103,6 +108,7 @@ namespace KGLaba2
                     value = (value << 1) | bit;
                 }
 
+                pixelValues[startPosition / 5] = value;
                 outputPixels[startPosition / 5] = getPixelByValue(value, startPosition / 5);
 
                 startPosition += 5;
@@ -118,6 +124,65 @@ namespace KGLaba2
             Console.WriteLine($"index: {index} x: {index % pictureWidth}; y: {index / pictureWidth} pallett: {xPalette} : {yPalette} [a={palette[indexPalette]}, {palette[indexPalette + 1]}, {palette[indexPalette+2]}, {palette[indexPalette+3]};");
 
             return new Pixel(index % pictureWidth, index / pictureWidth, palette[indexPalette], palette[indexPalette + 1], palette[indexPalette + 2], palette[indexPalette + 3]);
+        }
+
+        public void zoomFile()
+        {
+            string filePath = @"../../../zoomed.glhf";
+
+            using (FileStream fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                int zoom = 6;
+                int width = pictureWidth * zoom;
+                Console.WriteLine($"New {width} {(byte)(width >> 8)} {(byte)(width & 255)}");
+                fileStream.WriteByte((byte)(width >> 8));
+                fileStream.WriteByte((byte)(width & 255));
+
+                int height = pictureWidth * zoom;
+                fileStream.WriteByte((byte)(height >> 8));
+                fileStream.WriteByte((byte)(height & 255));
+
+                fileStream.WriteByte((byte) bitCount);
+
+                fileStream.WriteByte((byte)(paletteCount >> 8));
+                fileStream.WriteByte((byte)(paletteCount & 255));
+
+                Console.WriteLine($"Width: {pictureWidth}; Width: {pictureHeight};");
+                Console.WriteLine($"bit count: {bitCount}; palette count: {paletteCount};");
+                for (int i = 0; i < 4 * paletteCount; i++) fileStream.WriteByte(palette[i]);
+
+                byte currentByte = 0;
+                int freePosition = 8;
+                for (int i = 0; i < pictureHeight; i++)
+                {
+                    for (int k = 0; k < zoom; k++)
+                    {
+                        for (int j = 0; j < pictureWidth; j++)
+                        {
+                            for (int m = 0; m < zoom; m++)
+                            {
+                                if (freePosition >= bitCount)
+                                {
+                                    currentByte = (byte) (currentByte | (pixelValues[i * pictureHeight + j] << (freePosition - bitCount)));
+                                    freePosition -= bitCount;
+                                }
+                                else
+                                {
+                                    currentByte = (byte)(currentByte | (pixelValues[i * pictureHeight + j] >> (bitCount - freePosition)));
+                                    int needWrite = bitCount - freePosition;
+                                    fileStream.WriteByte(currentByte);
+                                    currentByte = 0;
+                                    freePosition = 8;
+                                    currentByte = (byte)(currentByte | (pixelValues[i * pictureHeight + j] << (freePosition - needWrite)));
+                                    freePosition -= needWrite;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (currentByte != 0) fileStream.WriteByte(currentByte);
+            }
         }
     }
 
