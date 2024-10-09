@@ -19,16 +19,14 @@ namespace KGLaba2
         {
             InitializeComponent();
             ReadPicture();
-            parsePixels();
-
-            
+            parsePixels();  
         }
 
         private void PictureBox1_Paint(object sender, PaintEventArgs e)
         {
             // Получаем объект Graphics
             graphics = e.Graphics;
-            int scale = 20;
+            int scale = 50;
             for (int i = 0; i < pictureHeight * pictureWidth; i++)
             {
                 Console.WriteLine($"x: {outputPixels[i].x}; y: {outputPixels[i].x} color: {outputPixels[i].color};");
@@ -39,7 +37,7 @@ namespace KGLaba2
 
         public void ReadPicture()
         {
-            string filePath = @"../../../new_picker1.glhf";
+            string filePath = @"../../../new_picker_1.glhf";
 
             using (FileStream fileStream = new FileStream(filePath, FileMode.Open))
             {
@@ -110,11 +108,11 @@ namespace KGLaba2
 
         public Pixel getPixelByValue(int value, int index)
         {
-            int xPalette = value >> bitCount;
+            int xPalette = value >> 2;
             int yPalette = value & 3;
 
-            int indexPalette = 4 * (xPalette * 5 + yPalette);
-            Console.WriteLine($"index: {index} x: {index % pictureWidth}; y: {index / pictureWidth} [a={palette[indexPalette]}, {palette[indexPalette + 1]}, {palette[indexPalette]+2}, {palette[indexPalette] + 3};");
+            int indexPalette = 4 * (yPalette * 5 + xPalette);
+            Console.WriteLine($"index: {index} x: {index % pictureWidth}; y: {index / pictureWidth} pallett: {xPalette} : {yPalette} [a={palette[indexPalette]}, {palette[indexPalette + 1]}, {palette[indexPalette+2]}, {palette[indexPalette+3]};");
 
             return new Pixel(index % pictureWidth, index / pictureWidth, palette[indexPalette], palette[indexPalette + 1], palette[indexPalette + 2], palette[indexPalette + 3]);
         }
