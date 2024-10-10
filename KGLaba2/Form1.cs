@@ -23,7 +23,6 @@ namespace KGLaba2
             InitializeComponent();
             ReadPicture();
             parsePixels();
-            //zoomFile();
         }
 
         private void PictureBox1_Paint(object sender, PaintEventArgs e)
@@ -44,17 +43,17 @@ namespace KGLaba2
 
         public void ReadPicture()
         {
-            string filePath = @"../../../zoomed.glhf";
+            string filePath = @"../../../new_picker_1.glhf";
 
             using (FileStream fileStream = new FileStream(filePath, FileMode.Open))
             {
-                byte[] buffer = new byte[2];    
-                buffer[0] = (byte) fileStream.ReadByte();
-                buffer[1] = (byte) fileStream.ReadByte();
+                byte[] buffer = new byte[2];
+                buffer[0] = (byte)fileStream.ReadByte();
+                buffer[1] = (byte)fileStream.ReadByte();
                 pictureWidth = (buffer[0] << 8) | buffer[1];
-                
-                buffer[0] = (byte) fileStream.ReadByte();
-                buffer[1] = (byte) fileStream.ReadByte();
+
+                buffer[0] = (byte)fileStream.ReadByte();
+                buffer[1] = (byte)fileStream.ReadByte();
                 pictureHeight = (buffer[0] << 8) | buffer[1];
 
                 bitCount = fileStream.ReadByte();
@@ -72,7 +71,7 @@ namespace KGLaba2
                     palette[i] = (byte)fileStream.ReadByte();
                 }
 
-                int countPixelByte = (int) Math.Ceiling((double)pictureWidth * pictureHeight * bitCount / 8);
+                int countPixelByte = (int)Math.Ceiling((double)pictureWidth * pictureHeight * bitCount / 8);
                 Console.WriteLine($"countPixelByte: {countPixelByte}");
                 pixels = new byte[countPixelByte];
                 for (int i = 0; i < countPixelByte; i++)
@@ -121,18 +120,17 @@ namespace KGLaba2
             int yPalette = value & 3;
 
             int indexPalette = 4 * (yPalette * 5 + xPalette);
-            Console.WriteLine($"index: {index} x: {index % pictureWidth}; y: {index / pictureWidth} pallett: {xPalette} : {yPalette} [a={palette[indexPalette]}, {palette[indexPalette + 1]}, {palette[indexPalette+2]}, {palette[indexPalette+3]};");
+            Console.WriteLine($"index: {index} x: {index % pictureWidth}; y: {index / pictureWidth} pallett: {xPalette} : {yPalette} [a={palette[indexPalette]}, {palette[indexPalette + 1]}, {palette[indexPalette + 2]}, {palette[indexPalette + 3]};");
 
             return new Pixel(index % pictureWidth, index / pictureWidth, palette[indexPalette], palette[indexPalette + 1], palette[indexPalette + 2], palette[indexPalette + 3]);
         }
 
-        public void zoomFile()
+        public void zoomFile(int zoom)
         {
             string filePath = @"../../../zoomed.glhf";
 
             using (FileStream fileStream = new FileStream(filePath, FileMode.Create))
             {
-                int zoom = 6;
                 int width = pictureWidth * zoom;
                 Console.WriteLine($"New {width} {(byte)(width >> 8)} {(byte)(width & 255)}");
                 fileStream.WriteByte((byte)(width >> 8));
@@ -142,7 +140,7 @@ namespace KGLaba2
                 fileStream.WriteByte((byte)(height >> 8));
                 fileStream.WriteByte((byte)(height & 255));
 
-                fileStream.WriteByte((byte) bitCount);
+                fileStream.WriteByte((byte)bitCount);
 
                 fileStream.WriteByte((byte)(paletteCount >> 8));
                 fileStream.WriteByte((byte)(paletteCount & 255));
@@ -163,7 +161,7 @@ namespace KGLaba2
                             {
                                 if (freePosition >= bitCount)
                                 {
-                                    currentByte = (byte) (currentByte | (pixelValues[i * pictureHeight + j] << (freePosition - bitCount)));
+                                    currentByte = (byte)(currentByte | (pixelValues[i * pictureHeight + j] << (freePosition - bitCount)));
                                     freePosition -= bitCount;
                                 }
                                 else
@@ -182,6 +180,14 @@ namespace KGLaba2
                 }
 
                 if (currentByte != 0) fileStream.WriteByte(currentByte);
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            int zoom = 1;
+            if (Int32.TryParse(textBox1.Text, out zoom)) {
+                zoomFile(zoom);
             }
         }
     }
