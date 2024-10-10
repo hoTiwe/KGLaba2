@@ -33,7 +33,6 @@ namespace KGLaba2
 
         private void PictureBox1_Paint(object sender, PaintEventArgs e)
         {
-            // Получаем объект Graphics
             graphics = e.Graphics;
             int netX = 0, netY = 0;
             for (int i = 0; i < pictureHeight * pictureWidth; i++)
@@ -46,10 +45,7 @@ namespace KGLaba2
                 Console.WriteLine($"x: {outputPixels[i].x}; y: {outputPixels[i].x} color: {outputPixels[i].color};");
                 netX = i % pictureWidth* coeffNet;
                 netY = i / pictureWidth* coeffNet;
-                //с сеткой
                 graphics.FillRectangle(new SolidBrush(outputPixels[i].color), x + netX, y + netY, scale, scale);
-                // без сетки
-                //graphics.FillRectangle(new SolidBrush(outputPixels[i].color), x, y, scale, scale);
             }
         }
 
