@@ -18,10 +18,16 @@ namespace KGLaba2
         Pixel[] outputPixels;
 
         Graphics graphics;
+
+        // Добавляем поля для смещений
+        int offsetX = 20; // Смещение по горизонтали
+        int offsetY = 20; // Смещение по вертикали
+        int scale = 15;
+        int coeffNet = 0;
         public Form1()
         {
             InitializeComponent();
-            ReadPicture();
+            ReadPicture(@"../../../new_picker_1.glhf");
             parsePixels();
         }
 
@@ -29,22 +35,76 @@ namespace KGLaba2
         {
             // Получаем объект Graphics
             graphics = e.Graphics;
-            int scale = 20;
             int netX = 0, netY = 0;
-
             for (int i = 0; i < pictureHeight * pictureWidth; i++)
             {
+                // Учет смещения при выводе
+                int x = outputPixels[i].x * scale + offsetX;
+                int y = outputPixels[i].y * scale + offsetY;
+
+                Console.WriteLine($"x: {outputPixels[i].x}; y: {outputPixels[i].y} color: {outputPixels[i].color};");
                 Console.WriteLine($"x: {outputPixels[i].x}; y: {outputPixels[i].x} color: {outputPixels[i].color};");
-                netX = i % pictureWidth;
-                netY = i / pictureWidth;
-                graphics.FillRectangle(new SolidBrush(outputPixels[i].color), outputPixels[i].x * scale + netX, outputPixels[i].y * scale + netY, scale, scale);
+                netX = i % pictureWidth* coeffNet;
+                netY = i / pictureWidth* coeffNet;
+                //с сеткой
+                graphics.FillRectangle(new SolidBrush(outputPixels[i].color), x + netX, y + netY, scale, scale);
+                // без сетки
+                //graphics.FillRectangle(new SolidBrush(outputPixels[i].color), x, y, scale, scale);
             }
         }
 
-        public void ReadPicture()
+        private void buttonSetScale_Click(object sender, EventArgs e)
         {
-            string filePath = @"../../../new_picker_1.glhf";
+            if (int.TryParse(textBoxScale.Text, out int newScale))
+            {
+                scale = newScale; // Устанавливаем новое значение масштаба
+                pictureBox1.Invalidate(); // Перерисовываем PictureBox
+            }
+            else
+            {
+                MessageBox.Show("Please enter a valid integer for scale."); // Сообщение об ошибке
+            }
+        }
 
+        private void buttonSetOffset_Click(object sender, EventArgs e)
+        {
+            // Попытка преобразовать текст из TextBox в целые числа
+            if (int.TryParse(textBoxOffsetX.Text, out int newOffsetX) &&
+                int.TryParse(textBoxOffsetY.Text, out int newOffsetY))
+            {
+                // Установка новых значений смещения
+                offsetX = newOffsetX;
+                offsetY = newOffsetY;
+
+                // Перерисовка PictureBox для применения новых смещений
+                pictureBox1.Invalidate();
+            }
+            else
+            {
+                // Если преобразование не удалось, выводим сообщение об ошибке
+                MessageBox.Show("Please enter valid integers for offsets.");
+            }
+        }
+
+        private void checkBoxNetX_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBoxNet.Checked)
+            {
+                coeffNet = 3;
+                Console.WriteLine("Сетка включена");
+                pictureBox1.Invalidate();
+            }
+            else
+            {
+                coeffNet = 0;
+                Console.WriteLine("Сетка off");
+                pictureBox1.Invalidate();
+            }
+        }
+
+
+        public void ReadPicture(string filePath)
+        {
             using (FileStream fileStream = new FileStream(filePath, FileMode.Open))
             {
                 byte[] buffer = new byte[2];
@@ -181,6 +241,9 @@ namespace KGLaba2
 
                 if (currentByte != 0) fileStream.WriteByte(currentByte);
             }
+            ReadPicture(filePath);
+            parsePixels();
+            pictureBox1.Invalidate();
         }
 
         private void button1_Click(object sender, EventArgs e)
