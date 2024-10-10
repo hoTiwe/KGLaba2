@@ -1,5 +1,6 @@
 using System.Drawing;
 using System.IO;
+using System.IO.Pipes;
 
 namespace KGLaba2
 {
@@ -12,9 +13,13 @@ namespace KGLaba2
 
         byte[] palette;
         byte[] pixels;
+        int[] pixelValues;
         Pixel[] outputPixels;
+        PictureBox[] pictureBoxs = new PictureBox[15];
+        int currentValuePixel = 0;
 
         Graphics graphics;
+        string filePath = @"../../../new_picker_1.glhfnewnew";
 
         // Добавляем поля для смещений
         int offsetX = 20; // Смещение по горизонтали
@@ -24,6 +29,7 @@ namespace KGLaba2
         public Form1()
         {
             InitializeComponent();
+            pictureBoxs = [ pictureBox2, pictureBox3, pictureBox4, pictureBox5, pictureBox6, pictureBox7, pictureBox8, pictureBox9, pictureBox10, pictureBox11, pictureBox12, pictureBox13, pictureBox14, pictureBox15, pictureBox16];
             ReadPicture();
             parsePixels();
         }
@@ -41,8 +47,8 @@ namespace KGLaba2
 
                 Console.WriteLine($"x: {outputPixels[i].x}; y: {outputPixels[i].y} color: {outputPixels[i].color};");
                 Console.WriteLine($"x: {outputPixels[i].x}; y: {outputPixels[i].x} color: {outputPixels[i].color};");
-                netX = i % pictureWidth* coeffNet;
-                netY = i / pictureWidth* coeffNet;
+                netX = i % pictureWidth * coeffNet;
+                netY = i / pictureWidth * coeffNet;
                 //с сеткой
                 graphics.FillRectangle(new SolidBrush(outputPixels[i].color), x + netX, y + netY, scale, scale);
                 // без сетки
@@ -102,8 +108,6 @@ namespace KGLaba2
 
         public void ReadPicture()
         {
-            string filePath = @"../../../new_picker_1.glhf";
-
             using (FileStream fileStream = new FileStream(filePath, FileMode.Open))
             {
                 byte[] buffer = new byte[2];
@@ -128,6 +132,11 @@ namespace KGLaba2
                 for (int i = 0; i < 4 * paletteCount; i++)
                 {
                     palette[i] = (byte)fileStream.ReadByte();
+                    
+                    if ((i + 1) % 4 == 0)
+                    {
+                        pictureBoxs[i / 4].BackColor = Color.FromArgb(palette[i-3], palette[i-2], palette[i-1], palette[i]);
+                    }
                 }
 
                 int countPixelByte = (int)Math.Ceiling((double)pictureWidth * pictureHeight * bitCount / 8);
@@ -144,6 +153,7 @@ namespace KGLaba2
         public void parsePixels()
         {
             outputPixels = new Pixel[pictureWidth * pictureHeight];
+            pixelValues = new int[pictureWidth * pictureHeight];
 
             int countPixelByte = (int)Math.Ceiling((double)pictureWidth * pictureHeight * bitCount / 8);
             int startPosition = 0;
@@ -165,6 +175,8 @@ namespace KGLaba2
                     value = (value << 1) | bit;
                 }
 
+                pixelValues[startPosition / 5] = value;
+
                 outputPixels[startPosition / 5] = getPixelByValue(value, startPosition / 5);
 
                 startPosition += 5;
@@ -182,10 +194,69 @@ namespace KGLaba2
             return new Pixel(index % pictureWidth, index / pictureWidth, palette[indexPalette], palette[indexPalette + 1], palette[indexPalette + 2], palette[indexPalette + 3]);
         }
 
-        private void labelOffsetX_Click(object sender, EventArgs e)
+        public void onColorClick(Object sender, EventArgs e)
         {
-
+            for (int i = 0; i < 15; i++)
+            {
+                if (sender is PictureBox pictureBoxr && pictureBoxr == pictureBoxs[i]) {
+                    currentValuePixel = ((i % 5) << 2) | (i / 5);
+                    Console.WriteLine($"New value {currentValuePixel}");
+                }   
+            }
         }
+
+        public void changeColorForPixel(object sender, EventArgs e)
+        {
+            int x, y;
+            Int32.TryParse(textBox1.Text, out x);
+            Int32.TryParse(textBox2.Text, out y);
+            pixelValues[y * pictureWidth + x] = currentValuePixel;
+            using (FileStream fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                fileStream.WriteByte((byte)(pictureWidth >> 8));
+                fileStream.WriteByte((byte)(pictureWidth & 255));
+
+                fileStream.WriteByte((byte)(pictureHeight >> 8));
+                fileStream.WriteByte((byte)(pictureHeight & 255));
+
+                fileStream.WriteByte((byte)bitCount);
+
+                fileStream.WriteByte((byte)(paletteCount >> 8));
+                fileStream.WriteByte((byte)(paletteCount & 255));
+                for (int i = 0; i < 4 * paletteCount; i++) fileStream.WriteByte(palette[i]);
+
+                byte currentByte = 0;
+                int freePosition = 8;
+                for (int i = 0; i < pictureHeight; i++)
+                {
+                    for (int j = 0; j < pictureWidth; j++)
+                    {
+                        if (freePosition >= bitCount)
+                        {
+                            currentByte = (byte)(currentByte | (pixelValues[i * pictureHeight + j] << (freePosition - bitCount)));
+                            freePosition -= bitCount;
+                        }
+                        else
+                        {
+                            currentByte = (byte)(currentByte | (pixelValues[i * pictureHeight + j] >> (bitCount - freePosition)));
+                            int needWrite = bitCount - freePosition;
+                            fileStream.WriteByte(currentByte);
+                            currentByte = 0;
+                            freePosition = 8;
+                            currentByte = (byte)(currentByte | (pixelValues[i * pictureHeight + j] << (freePosition - needWrite)));
+                            freePosition -= needWrite;
+                        }
+                    }
+                }
+
+                if (currentByte != 0) fileStream.WriteByte(currentByte);
+            }
+
+            ReadPicture();
+            parsePixels();
+            pictureBox1.Invalidate();
+        }
+
     }
 
     public class Pixel
