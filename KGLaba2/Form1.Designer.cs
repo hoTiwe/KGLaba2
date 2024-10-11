@@ -103,7 +103,6 @@ namespace KGLaba2
             labelOffsetX.Size = new Size(125, 25);
             labelOffsetX.TabIndex = 6;
             labelOffsetX.Text = "Смещение по X";
-            labelOffsetX.Click += labelOffsetX_Click;
             // 
             // label1
             // 

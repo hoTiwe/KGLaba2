@@ -1,5 +1,7 @@
 using System.Drawing;
 using System.IO;
+using static System.Net.Mime.MediaTypeNames;
+using System.Text;
 
 namespace KGLaba2
 {
@@ -16,6 +18,9 @@ namespace KGLaba2
 
         Graphics graphics;
 
+        string filePath = @"../../../new_picker_1.glhf";
+
+
         // Добавляем поля для смещений
         int offsetX = 20; // Смещение по горизонтали
         int offsetY = 20; // Смещение по вертикали
@@ -26,6 +31,7 @@ namespace KGLaba2
             InitializeComponent();
             ReadPicture();
             parsePixels();
+            writeJson();
         }
 
         private void PictureBox1_Paint(object sender, PaintEventArgs e)
@@ -41,8 +47,8 @@ namespace KGLaba2
 
                 Console.WriteLine($"x: {outputPixels[i].x}; y: {outputPixels[i].y} color: {outputPixels[i].color};");
                 Console.WriteLine($"x: {outputPixels[i].x}; y: {outputPixels[i].x} color: {outputPixels[i].color};");
-                netX = i % pictureWidth* coeffNet;
-                netY = i / pictureWidth* coeffNet;
+                netX = i % pictureWidth * coeffNet;
+                netY = i / pictureWidth * coeffNet;
                 //с сеткой
                 graphics.FillRectangle(new SolidBrush(outputPixels[i].color), x + netX, y + netY, scale, scale);
                 // без сетки
@@ -102,7 +108,6 @@ namespace KGLaba2
 
         public void ReadPicture()
         {
-            string filePath = @"../../../new_picker_1.glhf";
 
             using (FileStream fileStream = new FileStream(filePath, FileMode.Open))
             {
@@ -182,9 +187,57 @@ namespace KGLaba2
             return new Pixel(index % pictureWidth, index / pictureWidth, palette[indexPalette], palette[indexPalette + 1], palette[indexPalette + 2], palette[indexPalette + 3]);
         }
 
-        private void labelOffsetX_Click(object sender, EventArgs e)
+        public void writeJson()
         {
+            FileStream writeStream = new FileStream("../../../output.json", FileMode.Create);
+            string outJson = "{\n\t";
+            using (FileStream fileStream = new FileStream(filePath, FileMode.Open))
+            {
+                byte[] buffer = new byte[2];
+                buffer[0] = (byte)fileStream.ReadByte();
+                buffer[1] = (byte)fileStream.ReadByte();
+                pictureWidth = (buffer[0] << 8) | buffer[1];
+                outJson += $"\"width\": {pictureWidth},\n\t";
 
+                buffer[0] = (byte)fileStream.ReadByte();
+                buffer[1] = (byte)fileStream.ReadByte();
+                pictureHeight = (buffer[0] << 8) | buffer[1];
+                outJson += $"\"height\": {pictureHeight},\n\t";
+
+                bitCount = fileStream.ReadByte();
+                outJson += $"\"bitsOnPixel\": {bitCount},\n\t";
+
+                buffer[0] = (byte)fileStream.ReadByte();
+                buffer[1] = (byte)fileStream.ReadByte();
+                paletteCount = (buffer[0] << 8) | buffer[1];
+                outJson += $"\"colorsOnPalette\": {paletteCount},\n\t\"colors\": [";
+
+                palette = new byte[4 * paletteCount];
+                for (int i = 0; i < 4 * paletteCount; i++)
+                {
+                    palette[i] = (byte)fileStream.ReadByte();
+                    if (i % 4 == 0) outJson += "\n\t\t{\n\t\t\t\"alpha\": " + palette[i] + ",";
+                    if (i % 4 == 1) outJson += "\n\t\t\t\"red\": " + palette[i] + ",";
+                    if (i % 4 == 2) outJson += "\n\t\t\t\"green\": " + palette[i] + ",";
+                    if (i % 4 == 3) outJson += "\n\t\t\t\"blue\": " + palette[i]+ (i == 4 * paletteCount - 1 ? "\n\t\t}\n\t" : "\n\t\t},");
+                }
+                outJson += "],";
+
+                int countPixelByte = (int)Math.Ceiling((double)pictureWidth * pictureHeight * bitCount / 8);
+                pixels = new byte[countPixelByte];
+                outJson += $"\n\t\"pixels\": [";
+
+                for (int i = 0; i < countPixelByte; i++)
+                {
+                    pixels[i] = (byte)fileStream.ReadByte();
+                    outJson += "\n\t\t{\n\t\t\t\"xColor\": " + (palette[i] >> 2) + ",\n\t\t\t\"yColor\": " + (palette[i] & 3) + (i == countPixelByte - 1 ? "\n\t\t}\n\t" : "\n\t\t},");
+                }
+                outJson += "]\n}";
+
+            }
+            Console.WriteLine(outJson);
+            writeStream.Write(Encoding.Default.GetBytes(outJson));
+            writeStream.Close();
         }
     }
 
