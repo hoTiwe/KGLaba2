@@ -1,0 +1,124 @@
+{
+	"width": 3,
+	"height": 3,
+	"bitsOnPixel": 5,
+	"colorsOnPalette": 15,
+	"colors": [
+		{
+			"alpha": 255,
+			"red": 255,
+			"green": 0,
+			"blue": 0
+		},
+		{
+			"alpha": 255,
+			"red": 255,
+			"green": 242,
+			"blue": 10
+		},
+		{
+			"alpha": 255,
+			"red": 247,
+			"green": 193,
+			"blue": 1
+		},
+		{
+			"alpha": 255,
+			"red": 217,
+			"green": 255,
+			"blue": 3
+		},
+		{
+			"alpha": 255,
+			"red": 129,
+			"green": 253,
+			"blue": 8
+		},
+		{
+			"alpha": 255,
+			"red": 244,
+			"green": 114,
+			"blue": 114
+		},
+		{
+			"alpha": 255,
+			"red": 255,
+			"green": 247,
+			"blue": 105
+		},
+		{
+			"alpha": 255,
+			"red": 251,
+			"green": 215,
+			"blue": 87
+		},
+		{
+			"alpha": 255,
+			"red": 229,
+			"green": 255,
+			"blue": 83
+		},
+		{
+			"alpha": 255,
+			"red": 172,
+			"green": 253,
+			"blue": 93
+		},
+		{
+			"alpha": 255,
+			"red": 255,
+			"green": 164,
+			"blue": 164
+		},
+		{
+			"alpha": 255,
+			"red": 255,
+			"green": 252,
+			"blue": 195
+		},
+		{
+			"alpha": 255,
+			"red": 255,
+			"green": 232,
+			"blue": 149
+		},
+		{
+			"alpha": 255,
+			"red": 236,
+			"green": 253,
+			"blue": 143
+		},
+		{
+			"alpha": 255,
+			"red": 214,
+			"green": 255,
+			"blue": 174
+		}
+	],
+	"pixels": [
+		{
+			"xColor": 63,
+			"yColor": 3
+		},
+		{
+			"xColor": 63,
+			"yColor": 3
+		},
+		{
+			"xColor": 0,
+			"yColor": 0
+		},
+		{
+			"xColor": 0,
+			"yColor": 0
+		},
+		{
+			"xColor": 63,
+			"yColor": 3
+		},
+		{
+			"xColor": 63,
+			"yColor": 3
+		}
+	]
+}
