@@ -109,7 +109,7 @@ namespace KGLaba2
 
         public void ReadPicture()
         {
-            string filePath = @"../../../rabotai.glhf";
+            string filePath = @"../../../hourglass.glhf";
 
             using (FileStream fileStream = new FileStream(filePath, FileMode.Open))
             {
