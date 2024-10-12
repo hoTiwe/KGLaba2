@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace KGLaba2
 {
@@ -64,6 +65,7 @@ namespace KGLaba2
             }
         }
 
+        // градиент
         static string Generate7ColorGradientPattern(int width, int height)
         {
             string bitString = "";
@@ -80,12 +82,56 @@ namespace KGLaba2
 
             return bitString;
         }
+        // часы
+        static string generateHourglassPattern(int width, int height)
+        {
+            string bitString = "";
 
+            for(int y =0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    if (x >= y && x < width - y || x <= y && x > width - y - 1)
+                    {
+                        bitString += pixels[8];
+                    }
+                    else
+                    {
+                        bitString += pixels[9];
+                    }
+                }
+            }
+            return bitString;
+        }
+
+        static string generateChessboardPattern(int width, int height)
+        {
+            string bitString = "";
+
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    // Если сумма индексов x и y чётная, используем pixels[1], иначе - pixels[4]
+                    if ((x + y) % 2 == 0)
+                    {
+                        bitString += pixels[1];
+                    }
+                    else
+                    {
+                        bitString += pixels[4];
+                    }
+                }
+            }
+
+            return bitString;
+        }
+
+        // шахматная доска
         static void GenerateFile()
         {
-            using (FileStream fileStream = new FileStream(@"D:\tmp\rabotai.glhf", FileMode.Create))
+            using (FileStream fileStream = new FileStream(@"D:\tmp\hourglass.glhf", FileMode.Create))
             {
-                // Записываем ширину и высоту изображения
                 fileStream.WriteByte((byte)(width / 256));
                 fileStream.WriteByte((byte)(width % 256));
                 fileStream.WriteByte((byte)(height / 256));
@@ -106,7 +152,10 @@ namespace KGLaba2
                 }
 
                 // Генерируем и записываем узор
-                string bitString = Generate7ColorGradientPattern(width, height);
+                //градиент
+                //string bitString = Generate7ColorGradientPattern(width, height);
+                //string bitString = generateChessboardPattern(width, height);
+                string bitString = generateHourglassPattern(width, height);
                 WriteBitsToFile(fileStream, bitString);
             }
 
