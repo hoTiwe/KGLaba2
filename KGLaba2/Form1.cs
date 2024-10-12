@@ -33,6 +33,15 @@ namespace KGLaba2
             // Получаем объект Graphics
             graphics = e.Graphics;
             int netX = 0, netY = 0;
+            if(coeffNet != 0)
+            {
+                int x = outputPixels[0].x * scale + offsetX;
+                int y = outputPixels[0].y * scale + offsetY;
+                netX = pictureWidth * (scale + coeffNet) - coeffNet;
+                netY = pictureHeight * (scale + coeffNet) - coeffNet;
+
+                graphics.FillRectangle(Brushes.Black, x, y, netX, netY);
+            }
             for (int i = 0; i < pictureHeight * pictureWidth; i++)
             {
                 // Учет смещения при выводе
@@ -43,10 +52,8 @@ namespace KGLaba2
                 Console.WriteLine($"x: {outputPixels[i].x}; y: {outputPixels[i].x} color: {outputPixels[i].color};");
                 netX = i % pictureWidth* coeffNet;
                 netY = i / pictureWidth* coeffNet;
-                //с сеткой
+                
                 graphics.FillRectangle(new SolidBrush(outputPixels[i].color), x + netX, y + netY, scale, scale);
-                // без сетки
-                //graphics.FillRectangle(new SolidBrush(outputPixels[i].color), x, y, scale, scale);
             }
         }
 
@@ -87,7 +94,7 @@ namespace KGLaba2
         {
             if (checkBoxNet.Checked)
             {
-                coeffNet = 3;
+                coeffNet = 1;
                 Console.WriteLine("Сетка включена");
                 pictureBox1.Invalidate();
             }
@@ -102,7 +109,7 @@ namespace KGLaba2
 
         public void ReadPicture()
         {
-            string filePath = @"../../../new_picker_1.glhf";
+            string filePath = @"../../../rabotai.glhf";
 
             using (FileStream fileStream = new FileStream(filePath, FileMode.Open))
             {
