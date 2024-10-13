@@ -226,14 +226,38 @@ namespace KGLaba2
                 int countPixelByte = (int)Math.Ceiling((double)pictureWidth * pictureHeight * bitCount / 8);
                 pixels = new byte[countPixelByte];
                 outJson += $"\n\t\"pixels\": [";
-
+                int currentValue = 0;
+                int readedBits = 0;
                 for (int i = 0; i < countPixelByte; i++)
                 {
                     pixels[i] = (byte)fileStream.ReadByte();
-                    outJson += "\n\t\t{\n\t\t\t\"xColor\": " + (palette[i] >> 2) + ",\n\t\t\t\"yColor\": " + (palette[i] & 3) + (i == countPixelByte - 1 ? "\n\t\t}\n\t" : "\n\t\t},");
                 }
-                outJson += "]\n}";
 
+                int startPosition = 0;
+                int bitsTotal = bitCount * pictureWidth * pictureHeight;
+
+                while (startPosition + bitCount <= bitsTotal)
+                {
+                    int value = 0;
+
+                    for (int i = 0; i < 5; i++)
+                    {
+                        int byteIndex = (startPosition + i) / 8;
+                        int bitIndex = 7 - ((startPosition + i) % 8);
+
+                        // ѕолучаем значение текущего бита
+                        int bit = (pixels[byteIndex] >> bitIndex) & 1;
+
+                        // —двигаем бит на нужную позицию и добавл€ем к значению
+                        value = (value << 1) | bit;
+                    }
+
+                    outJson += "\n\t\t{\n\t\t\t\"xColor\": " + (value >> 2) + ",\n\t\t\t\"yColor\": " + (value & 3) + (startPosition + bitCount== bitsTotal ? "\n\t\t}\n\t" : "\n\t\t},");
+
+                    startPosition += 5;
+                }
+
+                outJson += "]\n}";
             }
             Console.WriteLine(outJson);
             writeStream.Write(Encoding.Default.GetBytes(outJson));

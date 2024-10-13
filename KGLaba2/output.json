@@ -97,28 +97,40 @@
 	],
 	"pixels": [
 		{
-			"xColor": 63,
-			"yColor": 3
+			"xColor": 3,
+			"yColor": 1
 		},
 		{
-			"xColor": 63,
-			"yColor": 3
-		},
-		{
-			"xColor": 0,
-			"yColor": 0
+			"xColor": 1,
+			"yColor": 1
 		},
 		{
 			"xColor": 0,
 			"yColor": 0
 		},
 		{
-			"xColor": 63,
-			"yColor": 3
+			"xColor": 4,
+			"yColor": 2
 		},
 		{
-			"xColor": 63,
-			"yColor": 3
+			"xColor": 1,
+			"yColor": 0
+		},
+		{
+			"xColor": 2,
+			"yColor": 1
+		},
+		{
+			"xColor": 4,
+			"yColor": 0
+		},
+		{
+			"xColor": 1,
+			"yColor": 2
+		},
+		{
+			"xColor": 0,
+			"yColor": 1
 		}
 	]
 }
