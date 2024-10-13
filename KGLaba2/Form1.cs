@@ -10,6 +10,10 @@ namespace KGLaba2
         int bitCount = 0;
         int paletteCount = 0;
 
+
+        List<int> pictureWidthFrames = new List<int>();
+        List<int> pictureHeightFrames = new List<int>();
+
         byte[] palette;
         byte[] pixels;
         Pixel[] outputPixels;
@@ -19,7 +23,7 @@ namespace KGLaba2
         // Добавляем поля для смещений
         int offsetX = 20; // Смещение по горизонтали
         int offsetY = 20; // Смещение по вертикали
-        int scale = 15;
+        int scale = 70;
         int coeffNet = 0;
 
         int frameCount;  // Количество кадров
@@ -40,23 +44,23 @@ namespace KGLaba2
             graphics = e.Graphics;
             Pixel[] framePixels = frames[currentFrame];  // Текущий кадр
             int netX = 0, netY = 0;
+            int Width = pictureWidthFrames[currentFrame];
+            int Height = pictureHeightFrames[currentFrame];
             if (coeffNet != 0)
             {
-                int x = outputPixels[0].x * scale + offsetX;
-                int y = outputPixels[0].y * scale + offsetY;
-                netX = pictureWidth * (scale + coeffNet) - coeffNet;
-                netY = pictureHeight * (scale + coeffNet) - coeffNet;
+                int x = framePixels[0].x * scale + offsetX;
+                int y = framePixels[0].y * scale + offsetY;
+                netX = Width * (scale + coeffNet) - coeffNet;
+                netY = Height * (scale + coeffNet) - coeffNet;
 
                 graphics.FillRectangle(Brushes.Black, x, y, netX, netY);
             }
-            for (int i = 0; i < pictureHeight * pictureWidth; i++)
+            for (int i = 0; i < Height * Width; i++)
             {
                 int x = framePixels[i].x * scale + offsetX;
                 int y = framePixels[i].y * scale + offsetY;
-                Console.WriteLine($"x: {outputPixels[i].x}; y: {outputPixels[i].y} color: {outputPixels[i].color};");
-                Console.WriteLine($"x: {outputPixels[i].x}; y: {outputPixels[i].x} color: {outputPixels[i].color};");
-                netX = i % pictureWidth * coeffNet;
-                netY = i / pictureWidth * coeffNet;
+                netX = i % Width * coeffNet;
+                netY = i / Height * coeffNet;
                 graphics.FillRectangle(new SolidBrush(framePixels[i].color), x + netX, y + netY, scale, scale);
             }
         }
@@ -128,10 +132,12 @@ namespace KGLaba2
                     buffer[0] = (byte)fileStream.ReadByte();
                     buffer[1] = (byte)fileStream.ReadByte();
                     pictureWidth = (buffer[0] << 8) | buffer[1];
+                    pictureWidthFrames.Add(pictureWidth);
 
                     buffer[0] = (byte)fileStream.ReadByte();
                     buffer[1] = (byte)fileStream.ReadByte();
                     pictureHeight = (buffer[0] << 8) | buffer[1];
+                    pictureHeightFrames.Add(pictureHeight);
 
                     bitCount = fileStream.ReadByte();
 
