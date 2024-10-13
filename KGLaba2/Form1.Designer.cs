@@ -40,6 +40,9 @@ namespace KGLaba2
             label1 = new Label();
             checkBoxNet = new CheckBox();
             label2 = new Label();
+            label3 = new Label();
+            button1 = new Button();
+            textBox1 = new TextBox();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
@@ -49,14 +52,14 @@ namespace KGLaba2
             pictureBox1.Location = new Point(2, 1);
             pictureBox1.Margin = new Padding(3, 4, 3, 4);
             pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(912, 519);
+            pictureBox1.Size = new Size(1142, 574);
             pictureBox1.TabIndex = 0;
             pictureBox1.TabStop = false;
             pictureBox1.Paint += PictureBox1_Paint;
             // 
             // textBoxScale
             // 
-            textBoxScale.Location = new Point(2, 557);
+            textBoxScale.Location = new Point(6, 612);
             textBoxScale.Name = "textBoxScale";
             textBoxScale.Size = new Size(100, 27);
             textBoxScale.TabIndex = 1;
@@ -64,7 +67,7 @@ namespace KGLaba2
             // 
             // buttonSetScale
             // 
-            buttonSetScale.Location = new Point(108, 559);
+            buttonSetScale.Location = new Point(112, 614);
             buttonSetScale.Name = "buttonSetScale";
             buttonSetScale.Size = new Size(112, 25);
             buttonSetScale.TabIndex = 2;
@@ -73,7 +76,7 @@ namespace KGLaba2
             // 
             // textBoxOffsetX
             // 
-            textBoxOffsetX.Location = new Point(238, 557);
+            textBoxOffsetX.Location = new Point(242, 612);
             textBoxOffsetX.Name = "textBoxOffsetX";
             textBoxOffsetX.Size = new Size(100, 27);
             textBoxOffsetX.TabIndex = 3;
@@ -81,7 +84,7 @@ namespace KGLaba2
             // 
             // textBoxOffsetY
             // 
-            textBoxOffsetY.Location = new Point(369, 557);
+            textBoxOffsetY.Location = new Point(373, 612);
             textBoxOffsetY.Name = "textBoxOffsetY";
             textBoxOffsetY.Size = new Size(100, 27);
             textBoxOffsetY.TabIndex = 4;
@@ -89,7 +92,7 @@ namespace KGLaba2
             // 
             // buttonSetOffset
             // 
-            buttonSetOffset.Location = new Point(475, 559);
+            buttonSetOffset.Location = new Point(479, 614);
             buttonSetOffset.Name = "buttonSetOffset";
             buttonSetOffset.Size = new Size(202, 25);
             buttonSetOffset.TabIndex = 5;
@@ -98,7 +101,7 @@ namespace KGLaba2
             // 
             // labelOffsetX
             // 
-            labelOffsetX.Location = new Point(238, 529);
+            labelOffsetX.Location = new Point(242, 584);
             labelOffsetX.Name = "labelOffsetX";
             labelOffsetX.Size = new Size(125, 25);
             labelOffsetX.TabIndex = 6;
@@ -107,7 +110,7 @@ namespace KGLaba2
             // 
             // label1
             // 
-            label1.Location = new Point(369, 529);
+            label1.Location = new Point(373, 584);
             label1.Name = "label1";
             label1.Size = new Size(125, 25);
             label1.TabIndex = 7;
@@ -115,7 +118,7 @@ namespace KGLaba2
             // 
             // checkBoxNet
             // 
-            checkBoxNet.Location = new Point(708, 557);
+            checkBoxNet.Location = new Point(712, 612);
             checkBoxNet.Name = "checkBoxNet";
             checkBoxNet.Size = new Size(181, 25);
             checkBoxNet.TabIndex = 8;
@@ -124,17 +127,45 @@ namespace KGLaba2
             // 
             // label2
             // 
-            label2.Location = new Point(2, 524);
+            label2.Location = new Point(6, 579);
             label2.Name = "label2";
             label2.Size = new Size(183, 25);
             label2.TabIndex = 9;
             label2.Text = "Коэффициент масштаба";
             // 
+            // label3
+            // 
+            label3.Location = new Point(858, 579);
+            label3.Name = "label3";
+            label3.Size = new Size(304, 25);
+            label3.TabIndex = 10;
+            label3.Text = "Коэффициент контрастности (от -1 до 1)";
+            // 
+            // button1
+            // 
+            button1.Location = new Point(1019, 614);
+            button1.Name = "button1";
+            button1.Size = new Size(125, 25);
+            button1.TabIndex = 11;
+            button1.Text = "Ввод";
+            button1.Click += buttonAdjustContrast_Click;
+            // 
+            // textBox1
+            // 
+            textBox1.Location = new Point(899, 610);
+            textBox1.Name = "textBox1";
+            textBox1.Size = new Size(100, 27);
+            textBox1.TabIndex = 12;
+            textBox1.Text = "0";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(914, 638);
+            ClientSize = new Size(1174, 666);
+            Controls.Add(textBox1);
+            Controls.Add(button1);
+            Controls.Add(label3);
             Controls.Add(label2);
             Controls.Add(label1);
             Controls.Add(pictureBox1);
@@ -165,5 +196,8 @@ namespace KGLaba2
         private Label label1;
         private CheckBox checkBoxNet;
         private Label label2;
+        private Label label3;
+        private Button button1;
+        private TextBox textBox1;
     }
 }
