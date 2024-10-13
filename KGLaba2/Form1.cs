@@ -31,7 +31,6 @@ namespace KGLaba2
         {
             InitializeComponent();
             ReadPicture();
-            //parsePixels();
             SetupAnimation();
         }
 
@@ -167,7 +166,7 @@ namespace KGLaba2
         private void SetupAnimation()
         {
             timer = new System.Windows.Forms.Timer();
-            timer.Interval = 333;
+            timer.Interval = 1500;
             timer.Tick += (sender, e) => {
                 currentFrame = (currentFrame + 1) % frameCount;
                 pictureBox1.Invalidate();  // Перерисовываем PictureBox
